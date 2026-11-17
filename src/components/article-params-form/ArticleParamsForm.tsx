@@ -1,12 +1,23 @@
 import { clsx } from 'clsx';
 import { useRef, useState } from 'react';
-import { defaultArticleState } from 'src/constants/articleProps';
+import {
+  backgroundColors,
+  contentWidthArr,
+  defaultArticleState,
+  fontColors,
+  fontFamilyOptions,
+  fontSizeOptions,
+} from 'src/constants/articleProps';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
+import { RadioGroup } from 'src/ui/radio-group';
+import { Select } from 'src/ui/select';
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
+import { Separator } from 'src/ui/separator';
+import { Text } from 'src/ui/text';
 
 import type { FormEvent } from 'react';
-import type { ArticleStateType } from 'src/constants/articleProps';
+import type { ArticleStateType, OptionType } from 'src/constants/articleProps';
 
 import styles from './ArticleParamsForm.module.scss';
 
@@ -33,6 +44,12 @@ export const ArticleParamsForm = ({
     setIsOpen((prevIsOpen) => !prevIsOpen);
   };
 
+  const handleOptionChange =
+    (key: keyof ArticleStateType) =>
+    (option: OptionType): void => {
+      setFormState((prevFormState) => ({ ...prevFormState, [key]: option }));
+    };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     onApply(formState);
@@ -49,6 +66,41 @@ export const ArticleParamsForm = ({
       <ArrowButton isOpen={isOpen} onClick={toggleSidebar} />
       <aside className={clsx(styles.container, { [styles.container_open]: isOpen })}>
         <form className={styles.form} onSubmit={handleSubmit} onReset={handleReset}>
+          <Text as="h2" size={31} weight={800} uppercase>
+            Задайте параметры
+          </Text>
+          <Select
+            title="Шрифт"
+            selected={formState.fontFamilyOption}
+            options={fontFamilyOptions}
+            onChange={handleOptionChange('fontFamilyOption')}
+          />
+          <RadioGroup
+            title="Размер шрифта"
+            name="fontSize"
+            selected={formState.fontSizeOption}
+            options={fontSizeOptions}
+            onChange={handleOptionChange('fontSizeOption')}
+          />
+          <Select
+            title="Цвет шрифта"
+            selected={formState.fontColor}
+            options={fontColors}
+            onChange={handleOptionChange('fontColor')}
+          />
+          <Separator />
+          <Select
+            title="Цвет фона"
+            selected={formState.backgroundColor}
+            options={backgroundColors}
+            onChange={handleOptionChange('backgroundColor')}
+          />
+          <Select
+            title="Ширина контента"
+            selected={formState.contentWidth}
+            options={contentWidthArr}
+            onChange={handleOptionChange('contentWidth')}
+          />
           <div className={styles.bottomContainer}>
             <Button title="Сбросить" htmlType="reset" type="clear" />
             <Button title="Применить" htmlType="submit" type="apply" />
